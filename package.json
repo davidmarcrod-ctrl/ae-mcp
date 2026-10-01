@@ -1,0 +1,23 @@
+{
+  "name": "ae-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server for controlling Adobe After Effects via ExtendScript",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json && cp -R src/ae-scripts dist/ae-scripts",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.2.0",
+    "@modelcontextprotocol/core": "^2.2.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "tsx": "^4.23.15",
+    "@types/node": "^26.6.3"
+  }
+}
