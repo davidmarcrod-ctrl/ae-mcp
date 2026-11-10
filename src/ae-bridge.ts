@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { writeFile, readFile, unlink } from "node:fs/promises";
+import { readdirSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
@@ -8,10 +9,24 @@ import { buildScript, buildScriptWithUndoGroup } from "./ae-script-builder.js";
 
 const execFileAsync = promisify(execFile);
 
-// Override with AE_MCP_APP_NAME if your machine has a different AE version
-// installed (e.g. "Adobe After Effects 2025") -- this must match the app's
-// exact name as macOS sees it (the .app bundle name in /Applications).
-const AE_APP_NAME = process.env.AE_MCP_APP_NAME || "Adobe After Effects 2026";
+// Which After Effects to talk to. By default, the newest "Adobe After Effects
+// YYYY" found in /Applications (so a yearly AE update needs no change here).
+// Override with AE_MCP_APP_NAME -- it must match the app's exact name as macOS
+// sees it (the .app bundle name, e.g. "Adobe After Effects 2026").
+function detectAEAppName(): string {
+    try {
+        const years = readdirSync("/Applications")
+            .map((d) => /^Adobe After Effects (\d{4})$/.exec(d)?.[1])
+            .filter((y): y is string => !!y)
+            .filter((y) => existsSync(`/Applications/Adobe After Effects ${y}/Adobe After Effects ${y}.app`))
+            .sort();
+        if (years.length) return `Adobe After Effects ${years[years.length - 1]}`;
+    } catch {
+        // fall through to the default below
+    }
+    return "Adobe After Effects 2027";
+}
+const AE_APP_NAME = process.env.AE_MCP_APP_NAME || detectAEAppName();
 const DEFAULT_TIMEOUT_MS = 30_000;
 const KEEP_TEMP = process.env.AE_MCP_KEEP_TEMP === "1";
 // After the osascript call returns, how long to wait for the result file to

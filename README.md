@@ -11,7 +11,7 @@ Node generates ExtendScript (JSX), writes it to a temp file, and runs it against
 - macOS, with Adobe After Effects installed and running with a project open.
 - Node.js 20+.
 
-By default the bridge targets "Adobe After Effects 2026" (matching the exact `.app` name macOS shows in `/Applications`). On a machine with a different version installed, set `AE_MCP_APP_NAME`, e.g.:
+By default the bridge targets the newest "Adobe After Effects YYYY" app it finds in `/Applications`, so yearly AE updates need no change. To force a specific version (e.g. with several installed), set `AE_MCP_APP_NAME` to the exact `.app` name, e.g.:
 
 ```bash
 export AE_MCP_APP_NAME="Adobe After Effects 2025"
